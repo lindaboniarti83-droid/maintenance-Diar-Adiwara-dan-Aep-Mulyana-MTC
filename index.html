@@ -1,0 +1,989 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Mapping Maintenance — Pemetaan Potensi 2026</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+:root{
+  --m:#ED1B24;--mt:#B9151B;--mp2:#FFF1F2;--mm:#FECACA;
+  --w:#fff;--bg:#F6F6F4;--ink:#1F2933;--ink2:#374151;--abu:#667085;
+  --bd:#E5E7EB;--sf:#F3F4F6;
+  --c1:#16A34A;--c2:#0284C7;--c3:#D97706;--c4:#6B7280;
+  --fd:'Georgia',serif;--fb:'Segoe UI',Arial,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:var(--fb);background:var(--bg);color:var(--ink);font-size:14px;line-height:1.5;}
+
+/* TOPBAR */
+.topbar{background:var(--ink);height:54px;padding:0 22px;display:flex;align-items:center;
+  justify-content:space-between;position:sticky;top:0;z-index:200;border-bottom:3px solid var(--m);}
+.tb-l{display:flex;align-items:center;gap:10px;}
+.tb-logo{width:30px;height:30px;background:var(--m);border-radius:6px;
+  display:flex;align-items:center;justify-content:center;font:900 13px var(--fd);color:#fff;}
+.tb-title{color:#fff;font-size:13px;font-weight:700;line-height:1.2;}
+.tb-sub{color:rgba(255,255,255,.4);font-size:10px;}
+.tb-nav{display:flex;gap:1px;}
+.nb{background:transparent;border:none;color:rgba(255,255,255,.55);
+  padding:6px 10px;border-radius:6px;cursor:pointer;font-size:11px;font-weight:500;transition:all .15s;white-space:nowrap;}
+.nb:hover{color:#fff;background:rgba(255,255,255,.08);}
+.nb.on{color:#fff;background:var(--m);}
+.badge-r{background:rgba(237,27,36,.2);border:1px solid rgba(237,27,36,.4);
+  color:#FCA5A5;font-size:10px;padding:3px 8px;border-radius:20px;letter-spacing:1px;text-transform:uppercase;}
+
+/* PAGES */
+.pg{display:none;padding:20px 22px;animation:fi .25s ease;}
+.pg.on{display:block;}
+@keyframes fi{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+.ph{margin-bottom:16px;}
+.ph h1{font-size:18px;font-weight:700;font-family:var(--fd);}
+.ph p{color:var(--abu);font-size:12px;margin-top:2px;}
+
+/* PANEL */
+.pn{background:#fff;border:1px solid var(--bd);border-radius:12px;padding:16px;margin-bottom:14px;}
+.pn-h{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px;}
+.pn-t{font-size:13px;font-weight:700;color:var(--ink);}
+.pn-s{font-size:11px;color:var(--abu);margin-top:2px;}
+.pn-title-bar{display:flex;align-items:center;gap:9px;margin-bottom:12px;}
+.pn-title-line{width:3px;height:18px;border-radius:2px;background:var(--m);flex-shrink:0;}
+.pn-title-content{}
+
+/* KPI ROW */
+.kpi-row{display:grid;grid-template-columns:repeat(5,1fr);gap:11px;margin-bottom:14px;}
+.kpi{background:#fff;border:1px solid var(--bd);border-radius:10px;padding:13px;position:relative;overflow:hidden;}
+.kpi::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;}
+.k-t::before{background:var(--m);}.k-1::before{background:var(--c1);}
+.k-2::before{background:var(--c2);}.k-3::before{background:var(--c3);}.k-4::before{background:var(--c4);}
+.kpi-lb{font-size:10px;text-transform:uppercase;letter-spacing:.8px;color:var(--abu);margin-bottom:5px;}
+.kpi-vl{font-size:26px;font-weight:800;line-height:1;}
+.k-t .kpi-vl{color:var(--m);}.k-1 .kpi-vl{color:var(--c1);}
+.k-2 .kpi-vl{color:var(--c2);}.k-3 .kpi-vl{color:var(--c3);}.k-4 .kpi-vl{color:var(--c4);}
+.kpi-m{font-size:10px;color:var(--abu);margin-top:3px;}
+
+/* GRIDS */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:15px;margin-bottom:15px;}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:13px;margin-bottom:13px;}
+
+/* BADGES */
+.br{display:inline-flex;align-items:center;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:600;white-space:nowrap;}
+.b1{background:#DCFCE7;color:#15803D;}
+.b2{background:#DBEAFE;color:#1D4ED8;}
+.b3{background:#FEF3C7;color:#B45309;}
+.b4{background:#F1F5F9;color:#475569;}
+.bla-t{background:#DCFCE7;color:#15803D;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:600;}
+.bla-s{background:#FEF3C7;color:#B45309;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:600;}
+.bla-r{background:#FEE2E2;color:#B91C1C;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:600;}
+.bd-D{background:#FEE2E2;color:#991B1B;font-size:11px;font-weight:700;padding:2px 8px;border-radius:4px;}
+.bd-I{background:#FEF3C7;color:#92400E;font-size:11px;font-weight:700;padding:2px 8px;border-radius:4px;}
+.bd-S{background:#DCFCE7;color:#166534;font-size:11px;font-weight:700;padding:2px 8px;border-radius:4px;}
+.bd-C{background:#DBEAFE;color:#1E3A8A;font-size:11px;font-weight:700;padding:2px 8px;border-radius:4px;}
+
+/* MANAGER CARDS */
+.mg-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px;}
+.mc{background:#fff;border:1px solid var(--bd);border-radius:12px;padding:13px;
+  cursor:pointer;transition:all .15s;position:relative;overflow:hidden;}
+.mc:hover{border-color:var(--m);box-shadow:0 4px 16px rgba(237,27,36,.09);transform:translateY(-2px);}
+.mc::before{content:'';position:absolute;top:0;left:0;width:100%;height:3px;}
+.mc-1::before{background:var(--c1);}.mc-2::before{background:var(--c2);}
+.mc-3::before{background:var(--c3);}.mc-4::before{background:var(--c4);}
+.mc-nm{font-weight:700;font-size:13px;margin-bottom:2px;}
+.mc-jb{font-size:11px;color:var(--abu);margin-bottom:8px;overflow:hidden;text-overflow:ellipsis;}
+.mc-sk{display:grid;grid-template-columns:1fr 1fr 1fr;gap:5px;margin:7px 0;}
+.msi{text-align:center;}
+.msv{font-size:13px;font-weight:800;}
+.msl{font-size:9px;color:var(--abu);text-transform:uppercase;}
+.mc-ft{display:flex;align-items:center;justify-content:space-between;}
+
+/* FILTER */
+.fb-row{display:flex;gap:6px;margin-bottom:13px;flex-wrap:wrap;align-items:center;}
+.fb{background:#fff;border:1px solid var(--bd);border-radius:20px;padding:5px 11px;
+  font-size:11px;cursor:pointer;transition:all .15s;color:var(--ink2);}
+.fb:hover{border-color:var(--m);color:var(--m);}
+.fb.on{background:var(--m);border-color:var(--m);color:#fff;}
+.inp-cari{border:1px solid var(--bd);border-radius:8px;padding:5px 11px;font-size:12px;outline:none;width:200px;}
+.inp-cari:focus{border-color:var(--m);}
+
+/* MODAL */
+.mo-ov{position:fixed;inset:0;background:rgba(31,41,51,.75);z-index:1000;
+  display:none;align-items:flex-start;justify-content:center;padding:16px;overflow-y:auto;backdrop-filter:blur(4px);}
+.mo-ov.on{display:flex;}
+.mo-bx{background:#fff;border-radius:14px;width:100%;max-width:820px;margin:auto;overflow:hidden;}
+.mo-hd{background:var(--ink);padding:20px 24px;color:#fff;border-bottom:3px solid var(--m);position:relative;}
+.mo-nm{font-size:17px;font-weight:700;margin-bottom:2px;}
+.mo-jb{color:rgba(255,255,255,.5);font-size:12px;margin-bottom:9px;}
+.mo-mt{display:flex;gap:12px;flex-wrap:wrap;}
+.mo-mt span{color:rgba(255,255,255,.4);font-size:11px;}
+.mo-mt span b{color:rgba(255,255,255,.82);font-weight:600;}
+.mo-cl{position:absolute;top:12px;right:12px;background:rgba(255,255,255,.1);
+  border:none;color:#fff;width:28px;height:28px;border-radius:50%;cursor:pointer;font-size:16px;line-height:28px;text-align:center;}
+.mo-bd{padding:20px 24px;max-height:82vh;overflow-y:auto;}
+.ms-t{font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:var(--abu);
+  font-weight:700;border-bottom:1px solid var(--bd);padding-bottom:4px;margin-bottom:9px;}
+.ms-t.r{color:var(--m);border-color:var(--mm);}
+.ms-t.g{color:var(--c1);border-color:#BBF7D0;}
+.ms-t.b{color:var(--c2);border-color:#BFDBFE;}
+.ms-t.o{color:var(--c3);border-color:#FDE68A;}
+.ms-t.p{color:#7C3AED;border-color:#E9D5FF;}
+.msec{margin-bottom:16px;}
+.s3g{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
+.s3i{text-align:center;padding:9px;background:var(--sf);border-radius:8px;}
+.s3v{font-size:19px;font-weight:800;}
+.s3l{font-size:10px;color:var(--abu);margin-top:2px;}
+.bc-row{display:flex;align-items:center;gap:7px;margin-bottom:4px;}
+.bc-lb{font-size:11px;color:var(--ink2);min-width:165px;}
+.bc-tr{flex:1;height:5px;border-radius:3px;background:var(--bd);overflow:hidden;}
+.bc-fi{height:100%;border-radius:3px;}
+.bc-an{font-size:11px;font-weight:600;min-width:16px;color:var(--ink2);}
+.desc-bx{font-size:12px;color:var(--ink2);line-height:1.7;background:var(--sf);border-radius:8px;padding:12px;border-left:3px solid var(--m);}
+.isu-bx{font-size:12px;color:#991B1B;line-height:1.7;background:var(--mp2);border-radius:8px;padding:12px;border-left:3px solid var(--m);}
+.growth-bx{font-size:12px;color:#166534;line-height:1.7;background:#F0FDF4;border-radius:8px;padding:12px;border-left:3px solid var(--c1);}
+.guard-bx{font-size:12px;color:#B45309;line-height:1.7;background:#FFFBEB;border-radius:8px;padding:12px;border-left:3px solid var(--c3);}
+.guide-bx{font-size:12px;color:#1D4ED8;line-height:1.7;background:#EFF6FF;border-radius:8px;padding:12px;border-left:3px solid var(--c2);}
+.dev-li{list-style:none;}
+.dev-li li{padding:5px 0;border-bottom:1px solid var(--bd);font-size:12px;display:flex;gap:7px;}
+.dev-li li::before{content:'→';color:var(--m);font-weight:700;flex-shrink:0;}
+.dev-li li:last-child{border-bottom:none;}
+.kg-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.tag-row{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px;}
+.tag{font-size:11px;background:var(--sf);padding:3px 10px;border-radius:6px;color:var(--ink2);}
+
+/* HEATMAP */
+.hm-wr{overflow-x:auto;}
+.hm-tb{width:100%;border-collapse:collapse;min-width:350px;}
+.hm-tb th{background:var(--sf);padding:8px 11px;font-size:11px;text-transform:uppercase;
+  letter-spacing:.5px;color:var(--abu);font-weight:700;border-bottom:2px solid var(--bd);text-align:center;}
+.hm-tb th:first-child{text-align:left;}
+.hm-tb td{padding:7px 11px;border-bottom:1px solid var(--bd);font-size:12px;text-align:center;vertical-align:middle;}
+.hm-tb td:first-child{text-align:left;font-weight:500;color:var(--ink2);}
+.hm-tb tr:last-child td{border-bottom:none;}
+.ht{background:#FEE2E2;color:#991B1B;font-weight:700;border-radius:4px;padding:2px 7px;display:inline-block;font-size:11px;}
+.hs{background:#FEF3C7;color:#92400E;font-weight:700;border-radius:4px;padding:2px 7px;display:inline-block;font-size:11px;}
+.hr{background:#DCFCE7;color:#166534;font-weight:700;border-radius:4px;padding:2px 7px;display:inline-block;font-size:11px;}
+
+/* ALERTS */
+.al{border-radius:8px;padding:10px 13px;margin-bottom:13px;display:flex;gap:9px;}
+.al-w{background:#FFF7ED;border:1px solid #FED7AA;color:#9A3412;}
+.al-r{background:var(--mp2);border:1px solid var(--mm);color:#991B1B;}
+.al-g{background:#F0FDF4;border:1px solid #BBF7D0;color:#166534;}
+.al-ik{font-size:14px;flex-shrink:0;margin-top:2px;}
+.al-tx{font-size:12px;line-height:1.5;}
+.al-tx strong{display:block;font-size:12px;margin-bottom:1px;font-weight:700;}
+
+/* INSIGHT ROWS */
+.in-row{display:flex;gap:9px;padding:9px 0;border-bottom:1px solid var(--bd);}
+.in-row:last-child{border-bottom:none;}
+.in-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;margin-top:4px;}
+.in-tx{font-size:12px;color:var(--ink2);line-height:1.6;}
+.in-tx strong{color:var(--ink);}
+
+/* ACTION PLAN */
+.ak-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin-bottom:14px;}
+.ak{border-radius:10px;padding:12px;border:1px solid;}
+.ak-E{background:#F0FDF4;border-color:#BBF7D0;}
+.ak-N{background:#EFF6FF;border-color:#BFDBFE;}
+.ak-P{background:#FFFBEB;border-color:#FDE68A;}
+.ak-T{background:#FAF5FF;border-color:#E9D5FF;}
+.ak-S{background:var(--mp2);border-color:var(--mm);}
+.ak-t{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;}
+.ak-E .ak-t{color:#15803D;}.ak-N .ak-t{color:#1D4ED8;}.ak-P .ak-t{color:#B45309;}
+.ak-T .ak-t{color:#7C3AED;}.ak-S .ak-t{color:var(--m);}
+.ak-nm{font-size:11px;color:var(--ink2);padding:3px 0;border-bottom:1px dashed rgba(0,0,0,.07);}
+.ak-nm:last-of-type{border-bottom:none;}
+.ak-nm small{display:block;font-size:10px;color:var(--abu);}
+
+.tbl{width:100%;border-collapse:collapse;}
+.tbl th{background:var(--sf);padding:8px 10px;text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:var(--abu);font-weight:600;border-bottom:2px solid var(--bd);}
+.tbl td{padding:8px 10px;border-bottom:1px solid var(--bd);font-size:12px;vertical-align:middle;}
+.tbl tr:last-child td{border-bottom:none;}
+.tbl tr:hover td{background:var(--mp2);}
+
+.cw{position:relative;width:100%;}
+.lg-row{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin-top:9px;}
+.lg-it{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--abu);}
+.lg-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0;}
+
+@media(max-width:900px){
+  .kpi-row{grid-template-columns:repeat(3,1fr);}
+  .g2{grid-template-columns:1fr;}
+  .g3{grid-template-columns:1fr 1fr;}
+  .kg-grid{grid-template-columns:1fr;}
+  .tb-nav{display:none;}
+}
+</style>
+</head>
+<body>
+
+<div id="app">
+<div class="topbar">
+  <div class="tb-l">
+    <div class="tb-logo">N</div>
+    <div>
+      <div class="tb-title">Mapping Maintenance — Pemetaan Potensi 2026</div>
+      <div class="tb-sub">Leadership Readiness &amp; HC Decision Support — Departemen Maintenance</div>
+    </div>
+  </div>
+  <div class="tb-nav">
+    <button class="nb on" onclick="sp('r',this)">Ringkasan</button>
+    <button class="nb" onclick="sp('i',this)">Profil Individual</button>
+    <button class="nb" onclick="sp('m',this)">Matriks Potensi</button>
+    <button class="nb" onclick="sp('a',this)">Rencana Aksi</button>
+  </div>
+  <span class="badge-r">Rahasia</span>
+</div>
+
+<!-- PAGE 1: RINGKASAN -->
+<div class="pg on" id="pg-r">
+<div class="ph"><h1>Ringkasan</h1><p>Departemen Maintenance — Pemetaan Potensi 2026</p></div>
+
+<!-- Wawasan -->
+<div class="pn">
+  <div class="pn-title-bar"><div class="pn-title-line" style="background:#ED1B24"></div><div class="pn-title-content"><div class="pn-t">Resume Singkat</div><div class="pn-s">Pembacaan potensi dan kapasitas — untuk kalibrasi panel HC</div></div></div>
+  <div id="wawasan"></div>
+</div>
+
+<!-- Profil Ringkas -->
+<div class="pn">
+  <div class="pn-title-bar"><div class="pn-title-line" style="background:#ED1B24"></div><div class="pn-title-content"><div class="pn-t">Gambaran Potensi Individual</div><div class="pn-s">Ringkasan kapasitas dan arah pengembangan — bukan refleksi performa appraisal</div></div></div>
+  <div id="profil-ringkas"></div>
+</div>
+</div>
+
+<!-- PAGE 2: PROFIL INDIVIDUAL -->
+<div class="pg" id="pg-i">
+<div class="ph"><h1>Profil Individual</h1><p>Klik kartu untuk membuka profil lengkap — termasuk Growth, Guardianship, dan Guidance Support</p></div>
+<div class="fb-row">
+  <button class="fb on" onclick="flt('all',this)">Semua (2)</button>
+  <button class="fb" onclick="flt('MP',this)">Medium Potential</button>
+  <input type="text" class="inp-cari" id="inp-s" placeholder="Cari nama / jabatan..." oninput="doSearch()">
+</div>
+<div class="mg-grid" id="mg-grid"></div>
+</div>
+
+<!-- PAGE 3: MATRIKS POTENSI -->
+<div class="pg" id="pg-m">
+<div class="ph">
+  <h1>Matriks Potensi</h1>
+  <p>Pemetaan kapasitas dan orientasi potensi — bukan refleksi performa appraisal</p>
+  <div style="background:#EFF6FF;border:1px solid #BFDBFE;border-radius:8px;padding:9px 13px;margin-top:10px;font-size:12px;color:#1E40AF;line-height:1.6">
+    <strong>Catatan pembacaan:</strong> Sumbu "Dorongan Kinerja" di sini mengacu pada <em>potensi dorongan internal</em> — seberapa kuat seseorang mendorong dirinya untuk mencapai target, bukan hasil KPI atau penilaian performa formal. Sumbu "Kesiapan Kepemimpinan" diturunkan dari pola DISC, kapasitas kognitif, dan profil kepemimpinan — bukan dari jabatan saat ini.
+  </div>
+</div>
+<div class="g2">
+  <div class="pn">
+    <div class="pn-h"><div><div class="pn-t">Potensi Dorongan Kerja vs Kesiapan Kepemimpinan</div><div class="pn-s">Seberapa kuat dorongan internal vs seberapa luas kapasitas memimpin saat ini</div></div></div>
+    <div class="cw" style="height:260px"><canvas id="c-pp"></canvas></div>
+    <div style="text-align:center;font-size:10px;color:var(--abu);margin-top:3px;">← Kesiapan Kepemimpinan Lebih Terbatas · Kesiapan Kepemimpinan Lebih Luas →</div>
+  </div>
+  <div class="pn">
+    <div class="pn-h"><div><div class="pn-t">Orientasi Potensi: Strategis vs Eksekusi</div><div class="pn-s">Kecenderungan berpikir dan bergerak — diturunkan dari profil DISC dan kapasitas kognitif</div></div></div>
+    <div class="cw" style="height:260px"><canvas id="c-se"></canvas></div>
+    <div style="text-align:center;font-size:10px;color:var(--abu);margin-top:3px;">← Orientasi Eksekusi Operasional · Orientasi Strategis →</div>
+  </div>
+</div>
+<div class="pn">
+  <div class="pn-h"><div><div class="pn-t">Perbandingan Profil Kapasitas — Semua Aspek</div><div class="pn-s">Peta kapasitas per dimensi — bukan skor target, tapi gambaran potensi yang bisa dikembangkan</div></div></div>
+  <div id="detail-compare"></div>
+</div>
+</div>
+
+<!-- PAGE 4: RENCANA AKSI -->
+<div class="pg" id="pg-a">
+<div class="ph"><h1>Rencana Aksi HC</h1><p>Tindakan pengembangan dan penguatan — perlu kalibrasi panel HC sebelum implementasi</p></div>
+<div class="al al-r"><div class="al-ik">⚠</div><div class="al-tx"><strong>Prinsip Tata Kelola</strong>Hasil assessment adalah masukan pengambilan keputusan — bukan penentu final. Setiap keputusan HC harus dikalibrasi dengan: riwayat kinerja aktual, masukan atasan langsung, konteks bisnis, validasi wawancara, dan review panel HC.</div></div>
+<div class="pn"><div class="pn-h"><div class="pn-t">Jalur Tindakan Pengembangan</div></div>
+  <div class="ak-grid" id="ak-grid"></div></div>
+<div class="pn"><div class="pn-h"><div class="pn-t">Priority Development Action</div><div class="pn-s">Fokus pada penguatan kompetensi teknis dan kepemimpinan operasional</div></div>
+  <table class="tbl"><thead><tr><th>Prioritas</th><th>Tindakan</th><th>Sasaran</th></tr></thead>
+  <tbody id="tbl-ak"></tbody></table></div>
+<div class="pn"><div class="pn-t" style="margin-bottom:10px;">Pernyataan Tata Kelola dan Disclaimer</div>
+  <div style="font-size:12px;color:var(--ink2);line-height:1.8;">
+    <p>Instrumen penilaian (DISC, IQ/GTQ, Skor Kompetensi, Adaptabilitas Kepemimpinan) adalah <strong>indikator kecenderungan perilaku</strong> — bukan diagnosis klinis atau penentuan karakter permanen.</p><br>
+    <p>Dashboard ini tidak menjadi satu-satunya dasar untuk: penugasan ulang, perluasan tanggung jawab, atau keputusan placement apapun.</p><br>
+    <p style="font-weight:700;color:var(--ink);margin-bottom:6px">Masukan kalibrasi yang wajib:</p>
+    <ul style="list-style:none;padding:0;display:flex;flex-direction:column;gap:5px">
+      <li style="display:flex;gap:8px;align-items:flex-start"><span style="color:var(--m);font-weight:700;flex-shrink:0">→</span><span>Riwayat kinerja aktual</span></li>
+      <li style="display:flex;gap:8px;align-items:flex-start"><span style="color:var(--m);font-weight:700;flex-shrink:0">→</span><span>Penilaian atasan langsung</span></li>
+      <li style="display:flex;gap:8px;align-items:flex-start"><span style="color:var(--m);font-weight:700;flex-shrink:0">→</span><span>Konteks bisnis terkini</span></li>
+      <li style="display:flex;gap:8px;align-items:flex-start"><span style="color:var(--m);font-weight:700;flex-shrink:0">→</span><span>Validasi wawancara mendalam</span></li>
+      <li style="display:flex;gap:8px;align-items:flex-start"><span style="color:var(--m);font-weight:700;flex-shrink:0">→</span><span>Keputusan panel HC</span></li>
+      <li style="display:flex;gap:8px;align-items:flex-start"><span style="color:var(--m);font-weight:700;flex-shrink:0">→</span><span>Penyelarasan rencana suksesi organisasi</span></li>
+    </ul>
+  </div></div>
+</div>
+
+<!-- MODAL -->
+<div class="mo-ov" id="mo-ov" onclick="if(event.target===this)closeM()">
+  <div class="mo-bx"><div id="mo-bx"></div></div>
+</div>
+
+<script>
+/* ─── DATA ─── */
+const MGR = [
+  {
+    no:1, bu:'KSNI', nik:'16000232', name:'Diar Adiwara',
+    division:'MANUFACTURE', dept:'MAINTENANCE',
+    title:'Maintenance Manager Majalengka — Snack, Biscuit & Confectionery',
+    site:'MAJALENGKA',
+    iq_general:96, iq_analytic:97, iq_category:'Rata-Rata',
+    daya_tangkap:3, daya_nalar:4, kemampuan_analisis:2, problem_solving:2, berpikir_kreatif:3,
+    kognitif_tmk:2, kognitif_ket:'OPERATIONAL',
+    tempo_kerja:4, inisiatif:4, motivasi:3, ketangguhan:3, ketelitian:4,
+    kinerja_tmk:3, kinerja_ket:'OPERATIONAL CUKUP',
+    penyesuaian_diri:2, relasi_sosial:2, kerja_sama:2, adaptasi:3, stabilitas_emosi:3,
+    kepemimpinan:3, pengambilan_keputusan:4, perencanaan:3,
+    ld_tmk:2, ld_ket:'KURANG BERPOTENSI MEMIMPIN',
+    disc:'DC', disc_group:'D', leadership_adaptability:'Average Leadership Adaptability',
+    jumlah_1:5, jumlah_2plus1:5,
+    rekomendasi:'MEDIUM POTENTIAL', keterangan:'COMPLETED',
+    aspek_kognitif:'Dari aspek kognitif, Diar menunjukkan kemampuan yang cukup baik dalam memahami informasi, instruksi kerja, serta berbagai situasi yang berkaitan dengan operasional maintenance. Namun, kemampuan analisis mendalam, problem solving, serta pengambilan keputusan pada situasi teknis yang kompleks masih perlu dikembangkan.',
+    aspek_kinerja:'Dari aspek kinerja, Diar menunjukkan dorongan kerja, keterlibatan dalam pekerjaan, serta orientasi pencapaian yang cukup baik. Namun, konsistensi dalam mendorong percepatan pencapaian target, melakukan follow-up secara berkelanjutan, serta meningkatkan standar hasil kerja masih perlu diperkuat.',
+    aspek_ld:'Dari aspek kerja sama dan kepemimpinan, Diar menunjukkan kemampuan yang cukup baik dalam mengambil peran dan mengarahkan pekerjaan. Namun, efektivitas kepemimpinannya masih perlu didukung oleh peningkatan kemampuan membangun kolaborasi tim, menjaga keterbukaan terhadap masukan, serta meningkatkan sensitivitas terhadap kebutuhan anggota tim.',
+    highlight_issue:'1. Kemampuan analisis mendalam, problem solving, serta pengambilan keputusan pada situasi teknis dan operasional yang kompleks masih perlu diperkuat.\n2. Konsistensi dalam melakukan monitoring, follow-up pekerjaan, serta mendorong percepatan pencapaian target masih perlu ditingkatkan.\n3. Kemampuan membangun kolaborasi tim, keterbukaan terhadap masukan, serta sensitivitas terhadap kebutuhan anggota tim masih perlu dikembangkan.',
+    reko_pengembangan:'1. Maintenance Planning & Execution Management\nMengembangkan kemampuan dalam perencanaan maintenance, penetapan prioritas pekerjaan, dan monitoring pelaksanaan.\n2. Leadership & Team Management\nMeningkatkan kemampuan mengarahkan, mengembangkan, dan menggerakkan tim maintenance.\n3. Problem Solving & Root Cause Analysis\nMemperkuat kemampuan melakukan analisis akar masalah dan penyusunan solusi perbaikan preventif.\n4. Cross Functional Coordination & Stakeholder Management\nMengembangkan kemampuan koordinasi dengan fungsi produksi, engineering, dan quality.'
+  },
+  {
+    no:2, bu:'KSNI', nik:'40000023', name:'Aep Mulyana',
+    division:'MANUFACTURE', dept:'MAINTENANCE',
+    title:'Maintenance Supervisor — Rancaekek',
+    site:'RANCAEKEK',
+    iq_general:86, iq_analytic:87, iq_category:'Rata-Rata Rendah',
+    daya_tangkap:2, daya_nalar:2, kemampuan_analisis:2, problem_solving:1, berpikir_kreatif:2,
+    kognitif_tmk:1, kognitif_ket:'OPERATIONAL',
+    tempo_kerja:2, inisiatif:4, motivasi:4, ketangguhan:3, ketelitian:4,
+    kinerja_tmk:3, kinerja_ket:'OPERATIONAL CUKUP',
+    penyesuaian_diri:3, relasi_sosial:3, kerja_sama:3, adaptasi:3, stabilitas_emosi:3,
+    kepemimpinan:3, pengambilan_keputusan:4, perencanaan:3,
+    ld_tmk:3, ld_ket:'CUKUP BERPOTENSI MEMIMPIN',
+    disc:'IS', disc_group:'I', leadership_adaptability:'Average Leadership Adaptability',
+    jumlah_1:2, jumlah_2plus1:6,
+    rekomendasi:'MEDIUM POTENTIAL', keterangan:'COMPLETED',
+    aspek_kognitif:'Aep menunjukkan kemampuan kognitif yang masih perlu dikembangkan, terutama dalam memahami informasi teknis, melakukan analisis, serta menyelesaikan permasalahan yang membutuhkan pertimbangan yang lebih mendalam. Beliau lebih optimal dalam pekerjaan yang memiliki arahan dan prosedur jelas.',
+    aspek_kinerja:'Aep menunjukkan dorongan yang cukup baik dalam mencapai target. Namun, tempo kerja cenderung belum konsisten dan lebih meningkat ketika menghadapi tekanan waktu atau deadline. Perencanaan kerja dan konsistensi pelaksanaan pekerjaan masih perlu diperkuat.',
+    aspek_ld:'Aep memiliki kemampuan yang cukup baik dalam membangun hubungan kerja dan bekerja sama. Beliau cenderung komunikatif dan cukup percaya diri. Namun, efektivitas kepemimpinannya masih perlu didukung oleh peningkatan kemampuan analisis dan pengambilan keputusan teknis yang lebih matang.',
+    highlight_issue:'1. Kemampuan analisis dan problem solving masih perlu ditingkatkan untuk mendukung efektivitas troubleshooting dan penanganan permasalahan mesin yang kompleks.\n2. Pengelolaan waktu, perencanaan pekerjaan, dan konsistensi ritme kerja masih perlu diperkuat.\n3. Dorongan dalam mengarahkan pekerjaan masih perlu diimbangi dengan kemampuan menjaga objektivitas dan mengelola komunikasi secara efektif.',
+    reko_pengembangan:'1. Maintenance Planning & Work Control\nMengembangkan kemampuan dalam perencanaan pekerjaan, pengaturan prioritas, dan monitoring agar aktivitas maintenance berjalan lebih terstruktur.\n2. Technical Problem Solving & Troubleshooting\nMemperkuat kemampuan analisis teknis, troubleshooting, dan root cause analysis.\n3. Operational Leadership & Decision Making\nMeningkatkan kemampuan mengarahkan pekerjaan, pengambilan keputusan, serta menjaga objektivitas komunikasi.\n4. Coordination & Team Communication\nMengembangkan koordinasi kerja dan kolaborasi lintas fungsi dengan tim produksi dan pihak terkait.'
+  }
+];
+
+/* ─── UTILS ─── */
+const esc=s=>!s?'':String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+const d1=g=>(g||'D').trim()[0];
+
+function rLabel(r){
+  if(!r)return'N/A';const u=r.toUpperCase();
+  if(u.includes('HIGH POTENTIAL WITH'))return'Kesiapan Berkembang';
+  if(u.includes('HIGH'))return'Kesiapan Kepemimpinan Luas';
+  if(u.includes('LOW'))return'Membutuhkan Enhancement';
+  return'Kesiapan Operasional';
+}
+function rBadge(r){
+  const u=(r||'').toUpperCase();
+  if(u.includes('HIGH POTENTIAL WITH'))return'b2';
+  if(u.includes('HIGH'))return'b1';
+  if(u.includes('LOW'))return'b4';
+  return'b3';
+}
+function mcClass(r){
+  const u=(r||'').toUpperCase();
+  if(u.includes('HIGH POTENTIAL WITH'))return'mc-2';
+  if(u.includes('HIGH'))return'mc-1';
+  if(u.includes('LOW'))return'mc-4';
+  return'mc-3';
+}
+function laLabel(la){
+  if(!la)return'Adaptabilitas Sedang';const l=la.toLowerCase();
+  if(l.includes('high'))return'Adaptabilitas Tinggi';
+  if(l.includes('low'))return'Adaptabilitas Rendah';
+  return'Adaptabilitas Sedang';
+}
+function laClass(la){
+  if(!la)return'bla-s';const l=la.toLowerCase();
+  if(l.includes('high'))return'bla-t';
+  if(l.includes('low'))return'bla-r';
+  return'bla-s';
+}
+function wSkor(s){
+  if(s>=4.5)return'#10B981';if(s>=4)return'#22C55E';if(s>=3)return'#EAB308';
+  if(s>=2)return'#F97316';return'#EF4444';
+}
+const avg=(m,fs)=>{let s=0,n=0;fs.forEach(f=>{if(m[f]>0){s+=m[f];n++;}});return n?parseFloat((s/n).toFixed(2)):0;};
+const kog=m=>avg(m,['daya_tangkap','daya_nalar','kemampuan_analisis','problem_solving','berpikir_kreatif']);
+const kin=m=>avg(m,['tempo_kerja','inisiatif','motivasi','ketangguhan','ketelitian']);
+const ld=m=>avg(m,['penyesuaian_diri','relasi_sosial','kerja_sama','adaptasi','stabilitas_emosi','kepemimpinan','pengambilan_keputusan','perencanaan']);
+function pot(m){const r=m.rekomendasi.toUpperCase();if(r.includes('HIGH POTENTIAL WITH'))return 3;if(r.includes('HIGH'))return 4;if(r.includes('LOW'))return 1;return 2;}
+function ori(m){const g=d1(m.disc_group);const c=kog(m),l=ld(m),k=kin(m);
+  if(['C','I'].includes(g)&&c>=3.5&&l>=3.2)return'Strategis';
+  if(g==='D'&&k>=3.5)return'Eksekusi';
+  if(l>=3.5&&k>=3.5&&c>=3.2)return'Seimbang';
+  if(g==='S'||(m.kerja_sama>=4&&m.adaptasi>=3&&m.relasi_sosial>=3&&l>=3.0))return'Suportif';
+  return'Spesialis';}
+
+/* ─── INIT ─── */
+window.addEventListener('DOMContentLoaded',()=>{
+  bWawasan();
+});
+
+/* ─── NAV ─── */
+function sp(id,btn){
+  document.querySelectorAll('.pg').forEach(p=>p.classList.remove('on'));
+  document.querySelectorAll('.nb').forEach(b=>b.classList.remove('on'));
+  document.getElementById('pg-'+id).classList.add('on');
+  if(btn)btn.classList.add('on');
+  if(id==='i')initInd();
+  if(id==='m')initMat();
+  if(id==='a')initAksi();
+}
+
+/* ─── KPI ─── */
+function bKPI(){
+  const n=MGR.length;
+  const mp=MGR.filter(m=>m.rekomendasi.toUpperCase()==='MEDIUM POTENTIAL').length;
+  const avgIQ=Math.round(MGR.reduce((a,m)=>a+m.iq_general,0)/n);
+  const avgKog=parseFloat((MGR.reduce((a,m)=>a+kog(m),0)/n).toFixed(2));
+  const avgLd=parseFloat((MGR.reduce((a,m)=>a+ld(m),0)/n).toFixed(2));
+  const avgTmk=Math.round(MGR.reduce((a,m)=>a+(m.kognitif_tmk+m.kinerja_tmk+m.ld_tmk),0)/n);
+  document.getElementById('kpi-row').innerHTML=`
+    <div class="kpi k-t"><div class="kpi-lb">Total Individu</div><div class="kpi-vl">${n}</div><div class="kpi-m">Maintenance Dept.</div></div>
+    <div class="kpi k-3"><div class="kpi-lb">Medium Potential</div><div class="kpi-vl">${mp}</div><div class="kpi-m">${(mp/n*100).toFixed(0)}% dari total</div></div>
+    <div class="kpi k-2"><div class="kpi-lb">Rata-rata IQ</div><div class="kpi-vl">${avgIQ}</div><div class="kpi-m">General Intelligence</div></div>
+    <div class="kpi k-1"><div class="kpi-lb">Avg Kognitif</div><div class="kpi-vl">${avgKog}</div><div class="kpi-m">Skala 1–5</div></div>
+    <div class="kpi k-4"><div class="kpi-lb">Avg Kepemimpinan</div><div class="kpi-vl">${avgLd}</div><div class="kpi-m">Skala 1–5</div></div>
+  `;
+}
+
+/* ─── CHART REKO ─── */
+function bReko(){
+  const labels=['Kesiapan Luas','Kesiapan Berkembang','Kesiapan Operasional','Butuh Enhancement'];
+  const counts=[
+    MGR.filter(m=>m.rekomendasi.toUpperCase()==='HIGH POTENTIAL').length,
+    MGR.filter(m=>m.rekomendasi.toUpperCase().includes('HIGH POTENTIAL WITH')).length,
+    MGR.filter(m=>m.rekomendasi.toUpperCase()==='MEDIUM POTENTIAL').length,
+    MGR.filter(m=>m.rekomendasi.toUpperCase()==='LOW POTENTIAL').length,
+  ];
+  const ctx=document.getElementById('c-reko').getContext('2d');
+  new Chart(ctx,{type:'doughnut',
+    data:{labels,datasets:[{data:counts,backgroundColor:['#16A34A','#0284C7','#D97706','#6B7280'],borderWidth:2,borderColor:'#fff'}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'right',labels:{font:{size:11},padding:10}}}}});
+}
+
+/* ─── RADAR ─── */
+function bRadar(){
+  const ctx=document.getElementById('c-radar').getContext('2d');
+  const cols=['#ED1B24','#0284C7'];
+  new Chart(ctx,{type:'radar',
+    data:{labels:['Kognitif','Kinerja','Kepemimpinan','Stabilitas Emosi','Problem Solving','Inisiatif'],
+      datasets:MGR.map((m,i)=>({label:m.name,
+        data:[kog(m),kin(m),ld(m),m.stabilitas_emosi,m.problem_solving,m.inisiatif],
+        borderColor:cols[i],backgroundColor:cols[i]+'28',borderWidth:2,
+        pointRadius:4,pointBackgroundColor:cols[i],pointBorderColor:'#fff',pointBorderWidth:1.5}))},
+    options:{responsive:true,maintainAspectRatio:false,
+      scales:{r:{min:1,max:5,ticks:{stepSize:1,font:{size:9},backdropColor:'rgba(255,255,255,.7)'},
+        pointLabels:{font:{size:10,weight:'500'}},
+        grid:{color:'rgba(0,0,0,.07)'},angleLines:{color:'rgba(0,0,0,.08)'}}},
+      plugins:{legend:{display:true,position:'top',labels:{font:{size:10},padding:8}},
+        tooltip:{callbacks:{label:c=>`${c.dataset.label}: ${c.raw}`}}}}});
+}
+
+/* ─── HEATMAP ─── */
+function bHeatmap(){
+  const dims=[
+    ['Daya Tangkap',m=>m.daya_tangkap],['Daya Nalar',m=>m.daya_nalar],
+    ['Kemampuan Analisis',m=>m.kemampuan_analisis],['Problem Solving',m=>m.problem_solving],
+    ['Berpikir Kreatif',m=>m.berpikir_kreatif],['— Rata Kognitif',m=>kog(m)],
+    ['Tempo Kerja',m=>m.tempo_kerja],['Inisiatif',m=>m.inisiatif],
+    ['Motivasi Berprestasi',m=>m.motivasi],['Ketangguhan',m=>m.ketangguhan],
+    ['Ketelitian',m=>m.ketelitian],['— Rata Kinerja',m=>kin(m)],
+    ['Penyesuaian Diri',m=>m.penyesuaian_diri],['Relasi Sosial',m=>m.relasi_sosial],
+    ['Kerja Sama',m=>m.kerja_sama],['Adaptasi Perubahan',m=>m.adaptasi],
+    ['Stabilitas Emosi',m=>m.stabilitas_emosi],['Kepemimpinan',m=>m.kepemimpinan],
+    ['Pengambilan Keputusan',m=>m.pengambilan_keputusan],['Perencanaan & Pengelolaan',m=>m.perencanaan],
+    ['— Rata Kepemimpinan',m=>ld(m)],
+  ];
+  const cls=v=>{const n=parseFloat(v);if(n>=3.6)return'hr';if(n>=2.6)return'hs';return'ht';};
+  document.getElementById('hm-body').innerHTML=dims.map(([label,fn])=>{
+    const isAvg=label.startsWith('—');
+    const style=isAvg?'background:var(--sf);font-weight:600;':'';
+    return`<tr style="${style}"><td>${isAvg?'<strong>'+label.replace('— ','')+'</strong>':label}</td>${MGR.map(m=>{const v=parseFloat(fn(m).toFixed(2));return`<td><span class="${cls(v)}">${v}</span></td>`;}).join('')}</tr>`;
+  }).join('');
+}
+
+/* ─── WAWASAN + FRAMEWORK G3 ─── */
+function bWawasan(){
+
+  /* ── Wawasan Eksekutif ── */
+  const insights=[
+    {c:'#EF4444',t:'Eksekusi berjalan — tapi pipeline analitiknya rapuh',
+     b:'Kedua orang ini bisa menjalankan pekerjaan sehari-hari. Yang belum terbentuk adalah kemampuan membaca situasi sebelum masalah meledak — bukan reaktif setelah mesin mati, tapi prediktif sebelum itu terjadi. Selama kebiasaan berpikir analitik belum dibangun secara sadar, mereka akan terus bergantung pada instruksi dan eskalasi, bukan memimpin penyelesaian masalah.'},
+    {c:'#F59E0B',t:'Departemen ini tidak punya cadangan kepemimpinan yang siap pakai',
+     b:'Kalau salah satu dari dua orang ini keluar, rotasi, atau jatuh sakit dalam waktu panjang — siapa yang mengisi? Jawabannya saat ini: belum ada. Kedua orang ini masih dalam tahap pengembangan, belum ada yang terbukti bisa dilepas mandiri di situasi tekanan tinggi. Ini bukan soal personal — ini adalah kelemahan sistem yang perlu dibenahi sekarang, bukan nanti.'},
+    {c:'#3B82F6',t:'Aep Mulyana punya bahan bakar yang belum punya mesin yang tepat',
+     b:'Inisiatif dan motivasi Aep itu nyata — bukan basa-basi. Tapi tanpa struktur berpikir yang lebih kuat, semangat itu akan terkuras habis untuk hal-hal operasional rutin. Yang dibutuhkan bukan motivasi lebih banyak, tapi exposure yang dirancang untuk membangun cara analisis yang lebih sistematis. Kalau itu tersedia, Aep punya potensi nyata untuk melampaui peran supervisornya dalam 18–24 bulan.'},
+    {c:'#10B981',t:'Diar Adiwara sudah punya fondasi — tapi masih bekerja sendiri',
+     b:'Diar berpikir cepat, bergerak cepat, dan tahu apa yang perlu dilakukan. Masalahnya: tim di bawahnya belum ikut tumbuh dengan cara yang sama. Kolaborasi dan keterbukaan terhadap masukan adalah gap yang paling menghambat potensinya saat ini. Bukan karena Diar tidak capable — justru karena terlalu capable, sehingga lebih mudah menyelesaikan sendiri daripada mengembangkan orang lain. Gap ini bisa diintervensi, tapi butuh kesadaran dan pendampingan yang konsisten.'},
+  ];
+  document.getElementById('wawasan').innerHTML=`
+    <div style="background:#FFFBEB;border:1px solid #FDE68A;border-radius:10px;padding:13px 16px;margin-bottom:14px">
+      <div style="font-size:11px;font-weight:700;color:#92400E;text-transform:uppercase;letter-spacing:.8px;margin-bottom:6px">📌 Catatan Pembacaan</div>
+      <div style="font-size:12px;color:var(--ink2);line-height:1.7">Wawasan di bawah ini adalah pembacaan atas <strong>kapasitas dan potensi</strong> — bukan penilaian performa kerja. Assessment ini melihat bagaimana seseorang berpikir, bergerak, dan berinteraksi dalam konteks pekerjaan. Semua keputusan HC tetap harus dikalibrasi dengan rekam jejak aktual dan validasi panel.</div>
+    </div>
+    ${insights.map(i=>`
+    <div class="in-row"><div class="in-dot" style="background:${i.c};margin-top:6px"></div>
+    <div class="in-tx"><strong>${i.t}</strong><br><span style="font-weight:400">${i.b}</span></div></div>`).join('')}`;
+
+  /* ── Framework G3 per individu ── */
+  const g3data = [
+    {
+      m: MGR[0],
+      jalur: 'Enhancement', jalur_warna:'#15803D', jalur_bg:'#F0FDF4', jalur_border:'#BBF7D0',
+      orientasi: 'Operasional–Eksekusi',
+      orientasi_sub: 'Bergerak cepat dalam konteks yang sudah dikenal. Cenderung memutuskan sendiri daripada membangun konsensus.',
+
+      /* GROWTH */
+      growth_jalur: 'Enhancement',
+      growth_def: 'Enhancement artinya memberi tantangan yang berbeda secara kualitas — bukan sekadar lebih banyak pekerjaan. Tujuannya: membangun cara berpikir dan cara memimpin yang belum pernah dilatih sebelumnya.',
+      growth_vs: 'Enlargement = lebih banyak tanggung jawab operasional (misalnya: tambah satu plant lagi). Enhancement = jenis tanggung jawab yang berbeda (misalnya: memimpin cross-functional improvement project yang mengharuskan negosiasi, bukan eksekusi langsung).',
+      growth_aksi: [
+        'Ditunjuk sebagai lead koordinator proyek efisiensi maintenance lintas fungsi (produksi, engineering, quality) — bukan sebagai eksekutor, tapi sebagai fasilitator yang harus mendorong kesepakatan bersama.',
+        'Diwajibkan menjalankan sesi one-on-one bulanan dengan masing-masing anggota tim maintenance, dengan fokus pada pengembangan kemampuan bukan evaluasi performa — ini melatih keterbukaan mendengarkan.',
+        'Dilibatkan dalam forum review MTTR dan reliability metrics bersama tim engineering — untuk membangun perspektif berbasis data, bukan hanya intuisi lapangan.',
+        'Diberi target: supervisor yang dipimpinnya harus bisa menyelesaikan permasalahan level tertentu tanpa eskalasi ke Diar — ini memaksa Diar mengembangkan orang lain, bukan mengerjakan sendiri.'
+      ],
+
+      /* GUARDIANSHIP */
+      guard_intro: 'Ada beberapa pola yang perlu diwaspadai — bukan karena berbahaya, tapi karena kalau tidak dikelola, akan menahan potensinya atau mengganggu tim di sekitarnya.',
+      guard_items: [
+        {label:'Kecenderungan memutuskan sendiri', detail:'Profil DISC-DC mengindikasikan dorongan kuat untuk bergerak cepat dan mengontrol hasil. Dalam situasi tekanan, ini bisa bermanifestasi sebagai keputusan unilateral yang melewati proses konsultasi — berisiko pada alignment tim dan kualitas keputusan jangka panjang.'},
+        {label:'Kolaborasi yang terbatas bukan karena tidak mau — tapi karena terbiasa cepat sendiri', detail:'Relasi sosial dan kerja sama yang rendah bukan sinyal orang yang tidak bisa bekerja dengan orang lain. Ini lebih sering terjadi pada individu yang sangat capable dan terbiasa lebih efisien mengerjakan sendiri. Risikonya: tim tidak berkembang, dan Diar menjadi bottleneck.'},
+        {label:'Burnout risk jika beban tidak dikelola', detail:'Kombinasi tempo kerja tinggi + keterbukaan terbatas + kecenderungan handle sendiri = risiko kelelahan yang tidak terlihat sampai tiba-tiba meledak. Perlu ada mekanisme check-in yang rutin dari atasan langsung.'},
+      ],
+
+      /* GUIDANCE */
+      guide_intro: 'Yang dibutuhkan Diar dari atasan dan lingkungan kerjanya bukan instruksi — ia sudah tahu cara bekerja. Yang dibutuhkan adalah struktur yang memaksanya berkembang ke arah yang tidak akan ia pilih sendiri.',
+      guide_items: [
+        {label:'Dari atasan langsung', detail:'Berikan tantangan yang mengharuskan Diar berhasil melalui orang lain, bukan melalui dirinya sendiri. Evaluasi kesuksesan bukan dari output yang ia hasilkan, tapi dari perkembangan tim yang ia kelola. Ini mengubah ukuran keberhasilan secara struktural.'},
+        {label:'Dari lingkungan kerja', detail:'Ciptakan forum di mana pendapat tim maintenance didengar dan divalidasi secara formal — ini memberi sinyal bahwa kolaborasi bukan sekadar formalitas, tapi punya dampak nyata pada keputusan. Diar perlu melihat sendiri nilai keterbukaan tersebut.'},
+        {label:'Dari sisi bisnis dan strategi', detail:'Diar saat ini berorientasi operasional-eksekusi. Untuk berkembang ke level berikutnya, ia perlu eksposur terhadap perspektif strategis: bagaimana keputusan maintenance berdampak pada reliability, biaya produksi, dan target bisnis plant secara keseluruhan. Libatkan dalam monthly business review, bukan hanya maintenance meeting.'},
+      ],
+
+      /* COMPLEX PROBLEM */
+      complex_title: 'Tantangan kompleks yang paling mungkin dihadapi Diar saat ini',
+      complex_items: [
+        {prob:'Breakdown berulang tanpa pola yang jelas', analisa:'Ini bukan hanya masalah teknis — ini adalah masalah sistem. Breakdown berulang biasanya mengindikasikan gap dalam preventive maintenance planning, atau bahwa tim belum cukup kuat mendokumentasikan dan menganalisis pola kegagalan. Diar cenderung menangani per kejadian, bukan membangun sistem yang mencegah kejadian berikutnya. Intervensi: wajibkan format failure mode log yang di-review mingguan bersama tim, bukan hanya dilaporkan ke atas.'},
+        {prob:'Tim maintenance yang masih sangat bergantung pada arahan langsung', analisa:'Jika setiap keputusan kecil masih perlu konfirmasi Diar, maka tim belum mandiri — dan Diar belum berhasil sebagai manajer, hanya sebagai eksekutor senior. Ini adalah masalah kepemimpinan, bukan masalah SDM. Solusinya bukan mengganti orang, tapi mengubah cara Diar mendelegasikan: berikan wewenang yang jelas per level, dengan batas eskalasi yang eksplisit.'},
+        {prob:'Koordinasi dengan produksi yang sering gesekan', analisa:'Gesekan antara maintenance dan produksi hampir universal di manufaktur — dan biasanya bukan soal siapa yang salah, tapi soal siapa yang menanggung biaya downtime. Diar perlu membangun bahasa yang sama dengan tim produksi: bukan "mesin rusak karena produksi tidak hati-hati" vs "maintenance lambat", tapi bersama menetapkan target availability dan berbagi tanggung jawab mencapainya.'},
+      ]
+    },
+    {
+      m: MGR[1],
+      jalur: 'Enhancement', jalur_warna:'#15803D', jalur_bg:'#F0FDF4', jalur_border:'#BBF7D0',
+      orientasi: 'Operasional–Suportif',
+      orientasi_sub: 'Bergerak dengan energi sosial dan semangat yang kuat. Lebih efektif dalam lingkungan yang terstruktur dan ada panduan yang jelas.',
+
+      /* GROWTH */
+      growth_jalur: 'Enhancement',
+      growth_def: 'Untuk Aep, enhancement berarti membangun fondasi cara berpikir yang lebih sistematis sebelum tanggung jawabnya diperluas. Bukan karena ia tidak capable — tapi karena tanpa fondasi analitik yang kuat, perluasan tanggung jawab hanya akan memperbesar masalah, bukan potensi.',
+      growth_vs: 'Enlargement untuk Aep saat ini prematur. Menambah jumlah mesin atau shift yang dikelola tanpa memperkuat kemampuan diagnosis dan perencanaan hanya akan menciptakan beban yang tidak tertopang. Enhancement dulu — baru enlargement bisa dipertimbangkan.',
+      growth_aksi: [
+        'Wajibkan dokumentasi root cause setiap breakdown menggunakan template 5-Why selama 90 hari — bukan laporan panjang, cukup format singkat yang diisi di tempat. Ini membangun refleksi sistematis sebagai kebiasaan, bukan tugas tambahan.',
+        'Dilibatkan dalam weekly preventive maintenance review bersama engineer — posisinya sebagai kontributor data lapangan, bukan peserta pasif. Tugasnya: bawa satu temuan lapangan setiap minggu dan jelaskan polanya.',
+        'Diberi tanggung jawab menyusun jadwal preventive maintenance bulanan untuk area tertentu secara mandiri — dengan review dari atasan sebelum dieksekusi. Ini melatih perencanaan, bukan hanya reaktif.',
+        'Setelah 3–4 bulan, evaluasi: apakah cara Aep mendiagnosis masalah mulai berubah dari "coba-coba" menjadi berbasis data? Jika ya, ini sinyal siap masuk tahap berikutnya.'
+      ],
+
+      /* GUARDIANSHIP */
+      guard_intro: 'Ada beberapa pola yang perlu dijaga — bukan kelemahan karakter, tapi pola yang jika dibiarkan akan menghambat perkembangan atau menciptakan masalah tersendiri.',
+      guard_items: [
+        {label:'Tempo kerja yang dipicu tekanan, bukan perencanaan', detail:'Aep bekerja lebih keras saat ada deadline atau tekanan mendadak. Ini terdengar positif, tapi sebenarnya adalah sinyal bahwa perencanaan belum menjadi kebiasaan — dan berarti masalah akan terus muncul di menit-menit terakhir. Dalam maintenance, reaktivitas yang tinggi adalah biaya — baik finansial maupun operasional.'},
+        {label:'Kepercayaan diri yang bisa jalan duluan sebelum analisisnya siap', detail:'DISC-IS menunjukkan individu yang komunikatif dan percaya diri. Dalam konteks yang positif ini sangat berguna. Tapi dalam konteks teknis, ada risiko bahwa Aep menyampaikan solusi sebelum benar-benar mendiagnosis masalahnya — ini bisa menciptakan kesan bahwa ia menguasai situasi, padahal belum. Perlu dilatih untuk "diagnosis dulu, bicara kemudian".'},
+        {label:'Rentan kehilangan momentum jika tidak ada energi sosial', detail:'Aep berkembang baik dalam lingkungan yang kolaboratif dan ada umpan balik. Jika ditempatkan dalam situasi kerja yang isolatif atau jarang mendapat feedback, motivasinya bisa turun signifikan. Ini bukan kelemahan — tapi perlu dikelola oleh atasan langsung.'},
+      ],
+
+      /* GUIDANCE */
+      guide_intro: 'Aep adalah orang yang akan berkembang pesat dalam lingkungan yang tepat. Yang dibutuhkan bukan lebih banyak tekanan — tapi lebih banyak struktur dan pendampingan yang konsisten.',
+      guide_items: [
+        {label:'Dari atasan langsung', detail:'Check-in mingguan yang pendek tapi rutin — bukan untuk evaluasi, tapi untuk mendiskusikan satu permasalahan teknis yang Aep hadapi minggu itu. Dorong Aep untuk menyampaikan analisanya dulu sebelum atasan memberi masukan. Ini membangun kebiasaan berpikir sistematis dalam konteks yang aman.'},
+        {label:'Dari lingkungan kerja', detail:'Berikan Aep satu tanggung jawab yang memerlukan perencanaan — misalnya jadwal PM bulanan atau koordinasi spare parts — dengan konsekuensi nyata jika tidak dijalankan dengan baik. Bukan hukuman, tapi ownership yang terasa. Ini mengubah cara ia memandang perencanaan dari beban menjadi alat kendali.'},
+        {label:'Dari sisi bisnis dan orientasi peran', detail:'Aep saat ini berorientasi operasional-suportif: kuat dalam eksekusi bersama, tapi belum terlatih berpikir dalam konteks bisnis. Secara bertahap, kenalkan ia pada dampak downtime terhadap target produksi — bukan sebagai ceramah, tapi melalui data aktual dari line yang ia tangani. Ketika Aep mulai melihat koneksi antara cara kerjanya dan angka bisnis, cara ia memprioritaskan pekerjaan akan berubah.'},
+      ],
+
+      /* COMPLEX PROBLEM */
+      complex_title: 'Tantangan kompleks yang paling mungkin dihadapi Aep saat ini',
+      complex_items: [
+        {prob:'Troubleshooting yang masih trial-and-error', analisa:'Ketika mesin bermasalah dan Aep belum punya metode diagnosis yang terstruktur, yang terjadi adalah coba ini, coba itu — sampai kebetulan ketemu. Ini memakan waktu, berisiko merusak komponen lain, dan tidak membangun pengetahuan yang bisa diwariskan ke teknisi di bawahnya. Solusi jangka pendek: terapkan checklist diagnosis per jenis mesin. Solusi jangka menengah: bangun knowledge base breakdown sederhana yang bisa diakses tim.'},
+        {prob:'Sulit konsisten saat tidak ada tekanan eksternal', analisa:'Ini adalah tantangan self-management — salah satu yang paling sulit diintervensi dari luar. Aep butuh sistem eksternal yang menciptakan struktur: jadwal review rutin, template dokumentasi, dan atasan yang aktif menanyakan progress — bukan karena tidak percaya, tapi karena konsistensi perlu dibangun secara bertahap sampai jadi habit.'},
+        {prob:'Komunikasi yang cepat tapi kadang kurang presisi teknis', analisa:'Gaya komunikatif Aep adalah aset. Tapi dalam konteks teknis, presisi lebih penting dari kecepatan. Ketika Aep melaporkan status pekerjaan atau kondisi mesin, perlu dilatih untuk selalu menyertakan data atau observasi konkret — bukan hanya kesimpulan. Ini meningkatkan kredibilitasnya sekaligus melatih kemampuan analisisnya.'},
+      ]
+    }
+  ];
+
+  const renderSection=(icon,color,bg,border,label,content)=>`
+    <div style="border-left:3px solid ${color};padding-left:13px;margin-bottom:14px">
+      <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.9px;color:${color};margin-bottom:7px">${icon} ${label}</div>
+      ${content}
+    </div>`;
+
+  document.getElementById("profil-ringkas").innerHTML = g3data.map(p => `
+    <div style="border:1px solid var(--bd);border-radius:14px;overflow:hidden;margin-bottom:18px;">
+
+      <!-- Header individu -->
+      <div style="background:var(--ink);padding:16px 20px;border-bottom:3px solid ${p.jalur_warna}">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:8px">
+          <div>
+            <div style="font-size:15px;font-weight:800;color:#fff;margin-bottom:3px">${esc(p.m.name)}</div>
+            <div style="font-size:12px;color:rgba(255,255,255,.55)">${esc(p.m.title)}</div>
+          </div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+            <span style="background:${p.jalur_bg};border:1px solid ${p.jalur_border};color:${p.jalur_warna};font-size:11px;font-weight:700;padding:4px 12px;border-radius:20px">🌱 Jalur: ${p.jalur}</span>
+            <span style="background:rgba(255,255,255,.1);color:rgba(255,255,255,.7);font-size:11px;padding:4px 12px;border-radius:20px">⚡ ${p.orientasi}</span>
+          </div>
+        </div>
+        <div style="font-size:12px;color:rgba(255,255,255,.45);font-style:italic">${p.orientasi_sub}</div>
+      </div>
+
+      <!-- Body -->
+      <div style="padding:18px 20px">
+
+        <!-- GROWTH -->
+        ${renderSection('🌱','#15803D','#F0FDF4','#BBF7D0','Growth — Jalur Pengembangan Diri', `
+          <div style="background:#F0FDF4;border-radius:8px;padding:11px 14px;margin-bottom:10px">
+            <div style="font-size:12px;color:#166534;line-height:1.7;margin-bottom:7px">${p.growth_def}</div>
+            <div style="font-size:11px;color:#15803D;font-style:italic;border-top:1px dashed #BBF7D0;padding-top:7px">${p.growth_vs}</div>
+          </div>
+          <div style="font-size:11px;font-weight:700;color:var(--ink2);margin-bottom:7px;text-transform:uppercase;letter-spacing:.7px">Langkah konkret:</div>
+          ${p.growth_aksi.map((a,i)=>`
+          <div style="display:flex;gap:9px;padding:6px 0;border-bottom:.5px solid var(--bd)">
+            <div style="width:20px;height:20px;border-radius:50%;background:#15803D;color:#fff;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px">${i+1}</div>
+            <div style="font-size:12px;color:var(--ink2);line-height:1.65">${a}</div>
+          </div>`).join('')}
+        `)}
+
+        <!-- GUARDIANSHIP -->
+        ${renderSection('🛡','#B45309','#FFFBEB','#FDE68A','Guardianship — Yang Perlu Dimitigasi', `
+          <div style="font-size:12px;color:var(--ink2);line-height:1.7;margin-bottom:10px;font-style:italic">${p.guard_intro}</div>
+          ${p.guard_items.map(g=>`
+          <div style="background:#FFFBEB;border:1px solid #FDE68A;border-radius:8px;padding:10px 13px;margin-bottom:8px">
+            <div style="font-size:12px;font-weight:700;color:#92400E;margin-bottom:4px">⚠ ${g.label}</div>
+            <div style="font-size:12px;color:var(--ink2);line-height:1.65">${g.detail}</div>
+          </div>`).join('')}
+        `)}
+
+        <!-- GUIDANCE -->
+        ${renderSection('🧭','#1D4ED8','#EFF6FF','#BFDBFE','Guidance — Dukungan yang Dibutuhkan dari Atasan & Lingkungan', `
+          <div style="font-size:12px;color:var(--ink2);line-height:1.7;margin-bottom:10px;font-style:italic">${p.guide_intro}</div>
+          ${p.guide_items.map(g=>`
+          <div style="background:#EFF6FF;border:1px solid #BFDBFE;border-radius:8px;padding:10px 13px;margin-bottom:8px">
+            <div style="font-size:12px;font-weight:700;color:#1D4ED8;margin-bottom:4px">◎ ${g.label}</div>
+            <div style="font-size:12px;color:var(--ink2);line-height:1.65">${g.detail}</div>
+          </div>`).join('')}
+        `)}
+
+        <!-- COMPLEX PROBLEM ANALYSIS -->
+        ${renderSection('🔬','#7C3AED','#F5F3FF','#EDE9FE','Analisis Complex Problem — Tantangan Nyata yang Perlu Diantisipasi', `
+          <div style="font-size:11px;color:var(--abu);margin-bottom:10px;font-style:italic">${p.complex_title}</div>
+          ${p.complex_items.map(c=>`
+          <div style="background:#fff;border:1px solid #E9D5FF;border-radius:8px;padding:11px 14px;margin-bottom:8px">
+            <div style="font-size:12px;font-weight:700;color:#6D28D9;margin-bottom:5px">🔴 ${c.prob}</div>
+            <div style="font-size:12px;color:var(--ink2);line-height:1.7">${c.analisa}</div>
+          </div>`).join('')}
+        `)}
+
+      </div>
+    </div>`).join('');
+}
+
+/* ─── RISK ─── */
+function bRisk(){
+  const risks=[
+    {lb:'Risiko Succession',vl:'TINGGI',dk:'0 individu siap promosi langsung',cls:'rsv-T'},
+    {lb:'Risiko Kognitif',vl:'TINGGI',dk:'Rata-rata IQ 91 — batas Rata-Rata Rendah',cls:'rsv-T'},
+    {lb:'Risiko Kepemimpinan',vl:'SEDANG',dk:'Pipeline kepemimpinan belum kuat',cls:'rsv-S'},
+  ];
+  document.getElementById('risk-grid').innerHTML=risks.map(r=>`
+    <div class="${r.cls}" style="padding:14px;border-radius:10px;text-align:center;border:1px solid;">
+      <div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.7px;margin-bottom:5px;opacity:.8">${r.lb}</div>
+      <div style="font-size:18px;font-weight:800;letter-spacing:.5px">${r.vl}</div>
+      <div style="font-size:10px;margin-top:4px;opacity:.65;line-height:1.4">${r.dk}</div>
+    </div>`).join('');
+}
+const rsv_css=`.rsv-T{background:#FEE2E2;border-color:#FECACA;color:#991B1B;}
+.rsv-S{background:#FEF3C7;border-color:#FDE68A;color:#92400E;}
+.rsv-R{background:#F0FDF4;border-color:#BBF7D0;color:#166534;}`;
+const styleEl=document.createElement('style');styleEl.textContent=rsv_css;document.head.appendChild(styleEl);
+
+/* ─── INDIVIDU ─── */
+let _flt='all',_src='';
+function initInd(){renderGrid();}
+function flt(f,btn){document.querySelectorAll('.fb').forEach(b=>b.classList.remove('on'));btn.classList.add('on');_flt=f;renderGrid();}
+function doSearch(){_src=document.getElementById('inp-s').value.toLowerCase();renderGrid();}
+
+function renderGrid(){
+  let fl=MGR;
+  if(_flt==='MP')fl=fl.filter(m=>m.rekomendasi.toUpperCase()==='MEDIUM POTENTIAL');
+  if(_src)fl=fl.filter(m=>m.name.toLowerCase().includes(_src)||m.title.toLowerCase().includes(_src));
+  if(!fl.length){document.getElementById('mg-grid').innerHTML='<div style="text-align:center;padding:36px;color:var(--abu)">Tidak ada data yang cocok.</div>';return;}
+  document.getElementById('mg-grid').innerHTML=fl.map(m=>{
+    const k=kog(m),n=kin(m),l=ld(m);
+    return`<div class="mc ${mcClass(m.rekomendasi)}" onclick="openM(${m.no})">
+      <div class="mc-nm">${esc(m.name)}</div>
+      <div class="mc-jb">${esc(m.title)}</div>
+      <div class="mc-sk">
+        <div class="msi"><div class="msv" style="color:${wSkor(k)}">${k}</div><div class="msl">Kognitif</div></div>
+        <div class="msi"><div class="msv" style="color:${wSkor(n)}">${n}</div><div class="msl">Kinerja</div></div>
+        <div class="msi"><div class="msv" style="color:${wSkor(l)}">${l}</div><div class="msl">Kepemimpinan</div></div>
+      </div>
+      <div class="mc-ft">
+        <span class="br ${rBadge(m.rekomendasi)}">${rLabel(m.rekomendasi)}</span>
+        <span class="bd-${d1(m.disc_group)}">${esc(m.disc)}</span>
+      </div>
+      <div style="margin-top:6px;font-size:10px;color:var(--abu)">${esc(m.site)} · IQ ${m.iq_general} · <span class="${laClass(m.leadership_adaptability)}">${laLabel(m.leadership_adaptability)}</span></div>
+    </div>`;
+  }).join('');
+}
+
+/* ─── MODAL ─── */
+function openM(no){
+  const m=MGR.find(x=>x.no===no);if(!m)return;
+  const k=kog(m),n=kin(m),l=ld(m),o=ori(m);
+  const bar=(lbl,val)=>`<div class="bc-row"><div class="bc-lb">${lbl}</div><div class="bc-tr"><div class="bc-fi" style="width:${val/5*100}%;background:${wSkor(val)}"></div></div><div class="bc-an">${val}</div></div>`;
+  const devLines=m.reko_pengembangan?m.reko_pengembangan.split('\n').filter(x=>x.trim()):[];
+  const issLines=m.highlight_issue?m.highlight_issue.split('\n').filter(x=>x.trim()):[];
+
+  document.getElementById('mo-bx').innerHTML=`
+    <div class="mo-hd">
+      <button class="mo-cl" onclick="closeM()">×</button>
+      <div class="mo-nm">${esc(m.name)}</div>
+      <div class="mo-jb">${esc(m.title)} · ${esc(m.dept)}</div>
+      <div class="mo-mt">
+        <span>Lokasi: <b>${esc(m.site)}</b></span>
+        <span>BU: <b>${esc(m.bu)}</b></span>
+        <span>NIK: <b>${esc(m.nik)}</b></span>
+      </div>
+    </div>
+    <div class="mo-bd">
+      <!-- Ringkasan -->
+      <div class="msec">
+        <div class="ms-t r">Ringkasan Kesiapan</div>
+        <div style="display:flex;gap:11px;flex-wrap:wrap;margin-bottom:10px">
+          <div><div style="font-size:10px;color:var(--abu);margin-bottom:3px">Status Kesiapan</div>
+            <span class="br ${rBadge(m.rekomendasi)}" style="font-size:12px;padding:4px 12px">${rLabel(m.rekomendasi)}</span></div>
+          <div><div style="font-size:10px;color:var(--abu);margin-bottom:3px">Adaptabilitas Kepemimpinan</div>
+            <span class="${laClass(m.leadership_adaptability)}" style="font-size:12px;padding:4px 12px">${laLabel(m.leadership_adaptability)}</span></div>
+          <div><div style="font-size:10px;color:var(--abu);margin-bottom:3px">Profil DISC</div>
+            <span class="bd-${d1(m.disc_group)}" style="font-size:12px">${esc(m.disc)}</span></div>
+        </div>
+        <div class="s3g" style="margin-bottom:10px">
+          <div class="s3i"><div class="s3v" style="color:${wSkor(k)}">${k}</div><div class="s3l">Kognitif</div></div>
+          <div class="s3i"><div class="s3v" style="color:${wSkor(n)}">${n}</div><div class="s3l">Kinerja</div></div>
+          <div class="s3i"><div class="s3v" style="color:${wSkor(l)}">${l}</div><div class="s3l">Kepemimpinan</div></div>
+          <div class="s3i"><div class="s3v">${m.iq_general}</div><div class="s3l">IQ General</div></div>
+          <div class="s3i"><div class="s3v">${m.iq_analytic}</div><div class="s3l">IQ Analitik</div></div>
+          <div class="s3i"><div class="s3v" style="font-size:11px">${esc(m.iq_category)}</div><div class="s3l">Kategori IQ</div></div>
+        </div>
+        <div class="tag-row">
+          <div class="tag">Orientasi: <strong>${o}</strong></div>
+          <div class="tag">Aspek Belum Terpenuhi: <strong>${m.kognitif_tmk+m.kinerja_tmk+m.ld_tmk}</strong></div>
+          <div class="tag">DISC Group: <strong>${m.disc_group}</strong></div>
+        </div>
+      </div>
+
+      <!-- Peta Kompetensi -->
+      <div class="msec">
+        <div class="ms-t">Peta Skor Kompetensi</div>
+        <div class="kg-grid">
+          <div>
+            <div style="font-size:10px;font-weight:700;color:var(--abu);margin-bottom:6px;text-transform:uppercase">Aspek Kognitif</div>
+            ${bar('Daya Tangkap',m.daya_tangkap)}${bar('Daya Nalar',m.daya_nalar)}${bar('Kemampuan Analisis',m.kemampuan_analisis)}${bar('Pemecahan Masalah',m.problem_solving)}${bar('Berpikir Kreatif',m.berpikir_kreatif)}
+            <div style="font-size:10px;font-weight:700;color:var(--abu);margin:9px 0 6px;text-transform:uppercase">Aspek Kinerja</div>
+            ${bar('Tempo Kerja',m.tempo_kerja)}${bar('Inisiatif',m.inisiatif)}${bar('Motivasi Berprestasi',m.motivasi)}${bar('Ketangguhan',m.ketangguhan)}${bar('Ketelitian',m.ketelitian)}
+          </div>
+          <div>
+            <div style="font-size:10px;font-weight:700;color:var(--abu);margin-bottom:6px;text-transform:uppercase">Kepemimpinan dan Kerja Sama</div>
+            ${bar('Penyesuaian Diri',m.penyesuaian_diri)}${bar('Relasi Sosial',m.relasi_sosial)}${bar('Kerja Sama',m.kerja_sama)}${bar('Adaptasi Perubahan',m.adaptasi)}${bar('Stabilitas Emosi',m.stabilitas_emosi)}${bar('Kepemimpinan',m.kepemimpinan)}${bar('Pengambilan Keputusan',m.pengambilan_keputusan)}${bar('Perencanaan & Pengelolaan',m.perencanaan)}
+          </div>
+        </div>
+      </div>
+
+      <!-- Deskripsi Assessment -->
+      <div class="msec">
+        <div class="ms-t b">Deskripsi Hasil Assessment</div>
+        <div class="desc-bx" style="margin-bottom:8px"><strong style="display:block;margin-bottom:4px">Aspek Kognitif</strong>${esc(m.aspek_kognitif)}</div>
+        <div class="desc-bx" style="margin-bottom:8px;border-left-color:var(--c3)"><strong style="display:block;margin-bottom:4px">Aspek Kinerja</strong>${esc(m.aspek_kinerja)}</div>
+        <div class="desc-bx" style="border-left-color:var(--c1)"><strong style="display:block;margin-bottom:4px">Aspek Kepemimpinan & Kerja Sama</strong>${esc(m.aspek_ld)}</div>
+      </div>
+
+      <!-- Highlight Issue -->
+      <div class="msec">
+        <div class="ms-t r">Highlight Issue</div>
+        <div class="isu-bx"><ul style="list-style:none;padding:0">${issLines.map(l=>`<li style="padding:3px 0;border-bottom:.5px dashed #FECACA;font-size:12px">${esc(l)}</li>`).join('')}</ul></div>
+      </div>
+
+      <!-- Growth -->
+      <div class="msec">
+        <div class="ms-t g">Growth — Area Pengembangan</div>
+        <div class="growth-bx">${getGrowth(m).map(x=>`<div style="padding:3px 0;border-bottom:.5px dashed #BBF7D0">→ ${esc(x)}</div>`).join('')}</div>
+      </div>
+
+      <!-- Guardianship -->
+      <div class="msec">
+        <div class="ms-t o">Guardianship — Aspek yang Perlu Diperhatikan</div>
+        <div class="guard-bx">${getGuardianship(m).map(x=>`<div style="padding:3px 0;border-bottom:.5px dashed #FDE68A">⚠ ${esc(x)}</div>`).join('')}</div>
+      </div>
+
+      <!-- Guidance -->
+      <div class="msec">
+        <div class="ms-t b">Guidance — Kebutuhan Dukungan</div>
+        <div class="guide-bx">${getGuidance(m).map(x=>`<div style="padding:3px 0;border-bottom:.5px dashed #BFDBFE">◎ ${esc(x)}</div>`).join('')}</div>
+      </div>
+
+      <!-- Rekomendasi Pengembangan -->
+      <div class="msec">
+        <div class="ms-t p">Rekomendasi Pengembangan</div>
+        <ul class="dev-li">${devLines.map(l=>`<li>${esc(l)}</li>`).join('')}</ul>
+      </div>
+    </div>`;
+  document.getElementById('mo-ov').classList.add('on');
+}
+function closeM(){document.getElementById('mo-ov').classList.remove('on');}
+
+/* ─── GROWTH / GUARDIANSHIP / GUIDANCE ─── */
+function getGrowth(m){
+  const lines=[];
+  if(m.kemampuan_analisis<3)lines.push('Penguatan kemampuan analisis teknis dan troubleshooting untuk situasi maintenance yang kompleks.');
+  if(m.problem_solving<3)lines.push('Pengembangan kapasitas problem solving — khususnya root cause analysis untuk gangguan mesin.');
+  if(m.perencanaan<3)lines.push('Peningkatan kemampuan perencanaan kerja maintenance dan pengelolaan prioritas lintas tim.');
+  if(m.kepemimpinan<3)lines.push('Penguatan kepemimpinan praktis melalui exposure organisasi yang lebih luas.');
+  if(m.relasi_sosial<3)lines.push('Pengembangan relasi sosial dan stakeholder management untuk koordinasi lintas fungsi.');
+  if(m.kerja_sama<3)lines.push('Penguatan kolaborasi tim — terutama dalam koordinasi dengan produksi, engineering, dan quality.');
+  const la=(m.leadership_adaptability||'').toLowerCase();
+  if(la.includes('low'))lines.push('Pengembangan fleksibilitas gaya kepemimpinan agar lebih adaptif dalam berbagai konteks organisasi.');
+  if(!lines.length)lines.push('Kapasitas operasional solid — perlu exposure yang lebih luas untuk pengembangan kapasitas strategis.');
+  return lines;
+}
+function getGuardianship(m){
+  const lines=[];
+  if(m.stabilitas_emosi<3)lines.push('Stabilitas emosi perlu dijaga — tekanan operasional tinggi berpotensi mempengaruhi konsistensi pengambilan keputusan.');
+  if(m.adaptasi<3)lines.push('Kapasitas adaptasi terbatas dapat menjadi faktor risiko dalam pengelolaan perubahan operasional yang cepat.');
+  if(m.kerja_sama<3)lines.push('Kecenderungan kerja individual perlu diperhatikan dalam konteks peran yang memerlukan kolaborasi intens.');
+  if(m.pengambilan_keputusan<3)lines.push('Konsistensi pengambilan keputusan teknis perlu diperkuat — terutama pada situasi breakdown mendadak.');
+  if(m.problem_solving<=1)lines.push('Problem solving sangat terbatas — risiko serius dalam penanganan gangguan mesin yang membutuhkan kemandirian analitik.');
+  if(!lines.length)lines.push('Profil relatif stabil. Tetap perlu observasi konsistensi dalam situasi tekanan operasional tinggi.');
+  return lines;
+}
+function getGuidance(m){
+  const lines=[];
+  const g=d1(m.disc_group||'D');
+  if(g==='D')lines.push('Berkembang dengan target yang jelas, tantangan terukur, dan ruang pengambilan keputusan yang cukup.');
+  if(g==='I')lines.push('Membutuhkan lingkungan kolaboratif dan keterlibatan sosial aktif untuk menjaga motivasi dan produktivitas.');
+  if(g==='S')lines.push('Berkembang lebih baik dalam lingkungan stabil dengan arahan konsisten dari atasan.');
+  if(g==='C')lines.push('Memerlukan standar yang terdefinisi dan waktu yang cukup untuk analisis sebelum keputusan penting.');
+  if(m.tempo_kerja<3)lines.push('Perlu dukungan dalam pengelolaan ritme kerja — coaching untuk membangun konsistensi tempo di luar tekanan deadline.');
+  if(m.kemampuan_analisis<3)lines.push('Membutuhkan mentoring teknis yang fokus pada analytical thinking dan metodologi troubleshooting.');
+  if(!lines.length)lines.push('Profil relatif mandiri — membutuhkan exposure tantangan teknis dan manajerial yang lebih luas.');
+  return lines;
+}
+
+/* ─── MATRIKS ─── */
+let _mi=false;
+function initMat(){
+  if(_mi)return;_mi=true;
+  const col=m=>{const r=m.rekomendasi.toUpperCase();if(r.includes('HIGH POTENTIAL WITH'))return'#0284C7';if(r.includes('HIGH'))return'#16A34A';if(r.includes('LOW'))return'#6B7280';return'#D97706';};
+  const ppCtx=document.getElementById('c-pp').getContext('2d');
+  new Chart(ppCtx,{type:'scatter',data:{datasets:[{label:'Individu',
+    data:MGR.map(m=>({x:pot(m)+(Math.random()-.5)*.15,y:kin(m)+(Math.random()-.5)*.1,m})),
+    backgroundColor:MGR.map(col),pointRadius:14,pointHoverRadius:17}]},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>`${c.raw.m.name} — ${rLabel(c.raw.m.rekomendasi)}`}}},
+      scales:{x:{min:0,max:5,title:{display:true,text:'Kesiapan Kepemimpinan (Diturunkan dari DISC & Kognitif)'},grid:{color:'#F3F4F6'}},
+              y:{min:1,max:5,title:{display:true,text:'Potensi Dorongan Kerja'},grid:{color:'#F3F4F6'}}}}});
+
+  const seCtx=document.getElementById('c-se').getContext('2d');
+  new Chart(seCtx,{type:'scatter',data:{datasets:[{label:'Individu',
+    data:MGR.map(m=>{const g=d1(m.disc_group);const str=(['C','I'].includes(g)?1:0)*2+kog(m);const ex=(['D','S'].includes(g)?1:0)*2+kin(m);return{x:str/2+(Math.random()-.5)*.1,y:ex/2+(Math.random()-.5)*.1,m};}),
+    backgroundColor:MGR.map(col),pointRadius:14,pointHoverRadius:17}]},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>`${c.raw.m.name} — ${ori(c.raw.m)}`}}},
+      scales:{x:{min:1,max:5,title:{display:true,text:'Orientasi Strategis'},grid:{color:'#F3F4F6'}},
+              y:{min:1,max:5,title:{display:true,text:'Orientasi Eksekusi'},grid:{color:'#F3F4F6'}}}}});
+
+  // Detail compare bars
+  const dims=[
+    {lbl:'Daya Tangkap',fn:m=>m.daya_tangkap},{lbl:'Daya Nalar',fn:m=>m.daya_nalar},
+    {lbl:'Kemampuan Analisis',fn:m=>m.kemampuan_analisis},{lbl:'Problem Solving',fn:m=>m.problem_solving},
+    {lbl:'Berpikir Kreatif',fn:m=>m.berpikir_kreatif},{lbl:'Tempo Kerja',fn:m=>m.tempo_kerja},
+    {lbl:'Inisiatif',fn:m=>m.inisiatif},{lbl:'Motivasi',fn:m=>m.motivasi},
+    {lbl:'Ketangguhan',fn:m=>m.ketangguhan},{lbl:'Ketelitian',fn:m=>m.ketelitian},
+    {lbl:'Penyesuaian Diri',fn:m=>m.penyesuaian_diri},{lbl:'Relasi Sosial',fn:m=>m.relasi_sosial},
+    {lbl:'Kerja Sama',fn:m=>m.kerja_sama},{lbl:'Adaptasi Perubahan',fn:m=>m.adaptasi},
+    {lbl:'Stabilitas Emosi',fn:m=>m.stabilitas_emosi},{lbl:'Kepemimpinan',fn:m=>m.kepemimpinan},
+    {lbl:'Pengambilan Keputusan',fn:m=>m.pengambilan_keputusan},{lbl:'Perencanaan',fn:m=>m.perencanaan},
+  ];
+  const colors=['#ED1B24','#0284C7'];
+  document.getElementById('detail-compare').innerHTML=`
+    <div style="display:flex;gap:18px;margin-bottom:11px;flex-wrap:wrap">
+      ${MGR.map((m,i)=>`<div style="display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600">
+        <div style="width:12px;height:12px;border-radius:2px;background:${colors[i]}"></div>${esc(m.name)}</div>`).join('')}
+    </div>
+    ${dims.map(d=>`
+    <div style="margin-bottom:7px">
+      <div style="font-size:11px;color:var(--abu);margin-bottom:3px">${d.lbl}</div>
+      ${MGR.map((m,i)=>`
+      <div style="display:flex;align-items:center;gap:7px;margin-bottom:2px">
+        <div style="font-size:10px;color:var(--ink2);min-width:100px">${esc(m.name.split(' ')[0])}</div>
+        <div style="flex:1;height:7px;border-radius:4px;background:var(--bd);overflow:hidden">
+          <div style="height:100%;width:${d.fn(m)/5*100}%;background:${colors[i]};border-radius:4px"></div>
+        </div>
+        <div style="font-size:11px;font-weight:700;color:${colors[i]};min-width:16px">${d.fn(m)}</div>
+      </div>`).join('')}
+    </div>`).join('')}
+  `;
+}
+
+/* ─── AKSI ─── */
+function initAksi(){
+  // Jalur cards — tanpa angka, nama lengkap + jabatan, penjelasan enhancement
+  const jalurData = [
+    {
+      k:'ak-N', icon:'🌱', label:'Enhancement — Peningkatan Kualitas Kepemimpinan',
+      sub:'Intervensi pengembangan yang menargetkan perubahan cara berpikir dan cara memimpin, bukan sekadar menambah beban kerja. Fokus pada exposure yang membangun judgment, kemampuan analisis situasi, dan kepemimpinan dalam kondisi yang lebih kompleks.',
+      catatan:'Berbeda dengan pelatihan biasa: enhancement harus dirasakan sebagai tantangan nyata yang sedikit di atas batas kenyamanan saat ini — cukup untuk meregangkan kapasitas, tapi tidak sampai membuat individu gagal.',
+      orang: [
+        {name:'Diar Adiwara', title:'Maintenance Manager Majalengka — Snack, Biscuit & Confectionery',
+         fokus:'Penguatan kolaborasi dan keterbukaan terhadap masukan',
+         contoh:'Dilibatkan dalam improvement project lintas fungsi (maintenance–produksi–engineering) sebagai lead koordinator, dengan kewajiban memfasilitasi diskusi dan menyepakati solusi bersama tim — bukan memutuskan sendiri.'},
+        {name:'Aep Mulyana', title:'Maintenance Supervisor — Rancaekek',
+         fokus:'Penguatan fondasi analitik dan perencanaan sistematis',
+         contoh:'Diwajibkan mendokumentasikan root cause setiap breakdown menggunakan 5-Why, dengan review rutin bersama atasan. Dilibatkan dalam forum perencanaan preventive maintenance bersama engineer untuk membangun pola pikir prediktif.'}
+      ]
+    }
+  ];
+
+  document.getElementById('ak-grid').innerHTML = jalurData.map(j => `
+    <div class="ak ${j.k}" style="grid-column:1/-1">
+      <div class="ak-t">${j.icon} ${j.label}</div>
+      <div style="font-size:12px;color:var(--ink2);line-height:1.7;margin-bottom:10px">${j.sub}</div>
+      <div style="font-size:11px;font-style:italic;color:#1D4ED8;background:#EFF6FF;border-radius:6px;padding:8px 10px;margin-bottom:12px">💡 ${j.catatan}</div>
+      ${j.orang.map(o => `
+      <div style="background:#fff;border:1px solid var(--bd);border-radius:9px;padding:12px;margin-bottom:8px">
+        <div style="font-size:13px;font-weight:700;color:var(--ink);margin-bottom:2px">${esc(o.name)}</div>
+        <div style="font-size:11px;color:var(--abu);margin-bottom:8px">${esc(o.title)}</div>
+        <div style="font-size:11px;font-weight:700;color:#15803D;margin-bottom:4px">Fokus: ${esc(o.fokus)}</div>
+        <div style="font-size:12px;color:var(--ink2);line-height:1.65">→ ${esc(o.contoh)}</div>
+      </div>`).join('')}
+    </div>`).join('');
+
+  const rows=[
+    ['KRITIS','#FEE2E2','#991B1B','Analytical Coaching & Root Cause Thinking — membangun kebiasaan berpikir sistematis dalam menangani gangguan mesin','Aep Mulyana — Maintenance Supervisor, Rancaekek'],
+    ['KRITIS','#FEE2E2','#991B1B','Interpersonal Leadership Coaching — kolaborasi lintas fungsi dan keterbukaan terhadap masukan tim','Diar Adiwara — Maintenance Manager Majalengka'],
+    ['TINGGI','#FEF3C7','#92400E','Preventive Maintenance Planning — perencanaan terstruktur, pengelolaan prioritas, dan monitoring berkala','Diar Adiwara & Aep Mulyana'],
+    ['TINGGI','#FEF3C7','#92400E','Cross Functional Coordination — penguatan pola koordinasi dengan produksi, engineering, dan quality secara rutin','Diar Adiwara & Aep Mulyana'],
+    ['SEDANG','#DCFCE7','#166534','Operational Decision Making — kemandirian pengambilan keputusan teknis di lapangan tanpa harus eskalasi','Aep Mulyana — Maintenance Supervisor, Rancaekek'],
+    ['SEDANG','#DBEAFE','#1E3A8A','IDP Review Panel — kalibrasi kesiapan peran dan pemetaan peluang pengembangan 12 bulan ke depan','Diar Adiwara — Maintenance Manager Majalengka'],
+  ];
+  document.getElementById('tbl-ak').innerHTML=rows.map(([p,bg,c,a,s])=>`
+    <tr><td><span style="background:${bg};color:${c};padding:2px 7px;border-radius:4px;font-size:11px">${p}</span></td>
+    <td>${a}</td><td style="font-size:11px;color:var(--abu)">${s}</td></tr>`).join('');
+}
+</script>
+</body>
+</html>
