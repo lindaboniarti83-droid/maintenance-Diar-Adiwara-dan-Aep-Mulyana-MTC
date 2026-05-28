@@ -257,16 +257,10 @@ body{font-family:var(--fb);background:var(--bg);color:var(--ink);font-size:14px;
       <div class="lg-sub">HC Decision Support — Departemen Maintenance</div>
     </div>
     <div class="lg-card">
-      <div class="lg-field">
-        <label class="lg-label" for="lg-user">Username</label>
-        <input class="lg-input" id="lg-user" type="text" placeholder="Masukkan username" autocomplete="username" spellcheck="false">
+      <div style="text-align:center;margin-bottom:20px">
+        <div style="font-size:13px;color:rgba(255,255,255,.55);line-height:1.7">Dokumen ini hanya untuk keperluan internal.<br>Klik tombol di bawah untuk melanjutkan.</div>
       </div>
-      <div class="lg-field" style="margin-bottom:20px">
-        <label class="lg-label" for="lg-pass">Password</label>
-        <input class="lg-input" id="lg-pass" type="password" placeholder="Masukkan password" autocomplete="current-password">
-      </div>
-      <button class="lg-btn" onclick="doLogin()">Masuk</button>
-      <div class="lg-err" id="lg-err">Username atau password salah. Silakan coba lagi.</div>
+      <button class="lg-btn" onclick="doLogin()">Masuk ke Dashboard</button>
     </div>
     <div class="lg-footer">Dokumen ini bersifat rahasia — hanya untuk penggunaan internal HC</div>
   </div>
@@ -1043,21 +1037,12 @@ function initAksi(){
 
 /* ─── LOGIN ─── */
 function doLogin(){
-  const u=document.getElementById('lg-user').value.trim().toLowerCase();
-  const p=document.getElementById('lg-pass').value.trim();
-  const err=document.getElementById('lg-err');
-  if(u==='mapping maintenance'&&p==='28052026'){
-    document.getElementById('login-screen').style.cssText='opacity:0;transition:opacity .4s;pointer-events:none';
-    setTimeout(()=>{
-      document.getElementById('login-screen').style.display='none';
-      document.getElementById('app').style.display='block';
-      bWawasan();
-    },400);
-  } else {
-    err.classList.add('show');
-    document.getElementById('lg-pass').value='';
-    document.getElementById('lg-pass').focus();
-  }
+  document.getElementById('login-screen').style.cssText='opacity:0;transition:opacity .4s;pointer-events:none';
+  setTimeout(()=>{
+    document.getElementById('login-screen').style.display='none';
+    document.getElementById('app').style.display='block';
+    bWawasan();
+  },400);
 }
 document.addEventListener('keydown',e=>{
   if(e.key==='Enter'&&document.getElementById('login-screen').style.display!=='none'){doLogin();}
