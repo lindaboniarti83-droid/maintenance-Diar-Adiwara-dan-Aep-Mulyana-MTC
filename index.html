@@ -210,11 +210,69 @@ body{font-family:var(--fb);background:var(--bg);color:var(--ink);font-size:14px;
   .kg-grid{grid-template-columns:1fr;}
   .tb-nav{display:none;}
 }
+
+/* ─── LOGIN ─── */
+#login-screen{position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;
+  background:var(--ink);overflow:hidden;}
+#login-screen::before{content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse 80% 60% at 50% 0%,rgba(237,27,36,.18) 0%,transparent 70%);
+  pointer-events:none;}
+.lg-wrap{position:relative;z-index:1;width:100%;max-width:400px;padding:0 20px;}
+.lg-brand{text-align:center;margin-bottom:32px;}
+.lg-logo{width:48px;height:48px;background:var(--m);border-radius:12px;margin:0 auto 14px;
+  display:flex;align-items:center;justify-content:center;font:900 20px Georgia,serif;color:#fff;
+  box-shadow:0 0 32px rgba(237,27,36,.45);}
+.lg-title{font-size:18px;font-weight:700;color:#fff;letter-spacing:.3px;font-family:Georgia,serif;}
+.lg-sub{font-size:12px;color:rgba(255,255,255,.38);margin-top:4px;letter-spacing:.3px;}
+.lg-card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.09);
+  border-radius:16px;padding:28px 28px 24px;backdrop-filter:blur(12px);}
+.lg-field{margin-bottom:16px;}
+.lg-label{font-size:11px;font-weight:600;color:rgba(255,255,255,.45);
+  text-transform:uppercase;letter-spacing:1px;margin-bottom:7px;display:block;}
+.lg-input{width:100%;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);
+  border-radius:9px;padding:11px 14px;font-size:13px;color:#fff;outline:none;
+  font-family:var(--fb);transition:border-color .2s;}
+.lg-input::placeholder{color:rgba(255,255,255,.22);}
+.lg-input:focus{border-color:rgba(237,27,36,.6);background:rgba(255,255,255,.08);}
+.lg-btn{width:100%;background:var(--m);border:none;border-radius:9px;padding:13px;
+  font-size:13px;font-weight:700;color:#fff;cursor:pointer;margin-top:4px;
+  letter-spacing:.3px;transition:background .15s,transform .1s;font-family:var(--fb);}
+.lg-btn:hover{background:#c9151c;}
+.lg-btn:active{transform:scale(.98);}
+.lg-err{background:rgba(237,27,36,.12);border:1px solid rgba(237,27,36,.3);
+  border-radius:8px;padding:9px 13px;font-size:12px;color:#FCA5A5;
+  margin-top:12px;display:none;text-align:center;}
+.lg-err.show{display:block;}
+.lg-footer{text-align:center;margin-top:16px;font-size:11px;color:rgba(255,255,255,.2);}
 </style>
 </head>
 <body>
 
-<div id="app">
+<!-- LOGIN SCREEN -->
+<div id="login-screen">
+  <div class="lg-wrap">
+    <div class="lg-brand">
+      <div class="lg-logo">N</div>
+      <div class="lg-title">Mapping Maintenance 2026</div>
+      <div class="lg-sub">HC Decision Support — Departemen Maintenance</div>
+    </div>
+    <div class="lg-card">
+      <div class="lg-field">
+        <label class="lg-label" for="lg-user">Username</label>
+        <input class="lg-input" id="lg-user" type="text" placeholder="Masukkan username" autocomplete="username" spellcheck="false">
+      </div>
+      <div class="lg-field" style="margin-bottom:20px">
+        <label class="lg-label" for="lg-pass">Password</label>
+        <input class="lg-input" id="lg-pass" type="password" placeholder="Masukkan password" autocomplete="current-password">
+      </div>
+      <button class="lg-btn" onclick="doLogin()">Masuk</button>
+      <div class="lg-err" id="lg-err">Username atau password salah. Silakan coba lagi.</div>
+    </div>
+    <div class="lg-footer">Dokumen ini bersifat rahasia — hanya untuk penggunaan internal HC</div>
+  </div>
+</div>
+
+<div id="app" style="display:none">
 <div class="topbar">
   <div class="tb-l">
     <div class="tb-logo">N</div>
@@ -420,9 +478,7 @@ function ori(m){const g=d1(m.disc_group);const c=kog(m),l=ld(m),k=kin(m);
   return'Spesialis';}
 
 /* ─── INIT ─── */
-window.addEventListener('DOMContentLoaded',()=>{
-  bWawasan();
-});
+/* bWawasan called after login */
 
 /* ─── NAV ─── */
 function sp(id,btn){
@@ -984,6 +1040,28 @@ function initAksi(){
     <tr><td><span style="background:${bg};color:${c};padding:2px 7px;border-radius:4px;font-size:11px">${p}</span></td>
     <td>${a}</td><td style="font-size:11px;color:var(--abu)">${s}</td></tr>`).join('');
 }
+
+/* ─── LOGIN ─── */
+function doLogin(){
+  const u=document.getElementById('lg-user').value.trim().toLowerCase();
+  const p=document.getElementById('lg-pass').value.trim();
+  const err=document.getElementById('lg-err');
+  if(u==='mapping maintenance'&&p==='28052026'){
+    document.getElementById('login-screen').style.cssText='opacity:0;transition:opacity .4s;pointer-events:none';
+    setTimeout(()=>{
+      document.getElementById('login-screen').style.display='none';
+      document.getElementById('app').style.display='block';
+      bWawasan();
+    },400);
+  } else {
+    err.classList.add('show');
+    document.getElementById('lg-pass').value='';
+    document.getElementById('lg-pass').focus();
+  }
+}
+document.addEventListener('keydown',e=>{
+  if(e.key==='Enter'&&document.getElementById('login-screen').style.display!=='none'){doLogin();}
+});
 </script>
 </body>
 </html>
